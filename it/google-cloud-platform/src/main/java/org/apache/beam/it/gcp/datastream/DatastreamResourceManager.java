@@ -238,19 +238,25 @@ public final class DatastreamResourceManager implements ResourceManager {
   public synchronized SourceConfig buildJDBCSourceConfig(
       String sourceConnectionProfileId, JDBCSource source) {
 
-    ConnectionProfile connectionProfile =
-        createJDBCSourceConnectionProfile(
-            generateDatastreamId(testId + "-" + sourceConnectionProfileId), source);
-    SourceConfig.Builder sourceConfigBuilder =
-        SourceConfig.newBuilder().setSourceConnectionProfile(connectionProfile.getName());
+    // ConnectionProfile connectionProfile =
+    //     createJDBCSourceConnectionProfile(
+    //         generateDatastreamId(testId + "-" + sourceConnectionProfileId), source);
+    SourceConfig.Builder sourceConfigBuilder = SourceConfig.newBuilder();
 
     switch (source.type()) {
       case MYSQL:
-        sourceConfigBuilder.setMysqlSourceConfig((MysqlSourceConfig) source.config());
+        sourceConfigBuilder
+            .setSourceConnectionProfile(
+                "projects/smt-test-477916/locations/us-east1/connectionProfiles/smt-test-sql")
+            .setMysqlSourceConfig((MysqlSourceConfig) source.config());
         break;
       case POSTGRESQL:
-        sourceConfigBuilder.setPostgresqlSourceConfig(
-            ((PostgresqlSourceConfig.Builder) source.config()).build());
+        ConnectionProfile connectionProfile =
+            createJDBCSourceConnectionProfile(
+                generateDatastreamId(testId + "-" + sourceConnectionProfileId), source);
+        sourceConfigBuilder
+            .setSourceConnectionProfile(connectionProfile.getName())
+            .setPostgresqlSourceConfig(((PostgresqlSourceConfig.Builder) source.config()).build());
         break;
       case ORACLE:
         sourceConfigBuilder.setOracleSourceConfig((OracleSourceConfig) source.config());

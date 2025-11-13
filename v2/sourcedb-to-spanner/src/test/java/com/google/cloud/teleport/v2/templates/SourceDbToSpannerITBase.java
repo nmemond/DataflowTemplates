@@ -41,6 +41,7 @@ import org.apache.beam.it.common.utils.IORedirectUtil;
 import org.apache.beam.it.common.utils.PipelineUtils;
 import org.apache.beam.it.gcp.JDBCBaseIT;
 import org.apache.beam.it.gcp.cloudsql.CloudMySQLResourceManager;
+import org.apache.beam.it.gcp.cloudsql.CloudPostgresResourceManager;
 import org.apache.beam.it.gcp.spanner.SpannerResourceManager;
 import org.apache.beam.it.jdbc.JDBCResourceManager;
 import org.apache.beam.it.jdbc.MySQLResourceManager;
@@ -66,6 +67,10 @@ public class SourceDbToSpannerITBase extends JDBCBaseIT {
 
   public PostgresResourceManager setUpPostgreSQLResourceManager() {
     return PostgresResourceManager.builder(testName).build();
+  }
+
+  public CloudPostgresResourceManager setUpCloudPostgreSQLResourceManager() {
+    return CloudPostgresResourceManager.builder(testName).setSchema("public").build();
   }
 
   public CassandraResourceManager setupCassandraResourceManager() {
@@ -372,7 +377,8 @@ public class SourceDbToSpannerITBase extends JDBCBaseIT {
     if (resourceManager instanceof CassandraResourceManager) {
       return SQLDialect.CASSANDRA.name();
     }
-    if (resourceManager instanceof PostgresResourceManager) {
+    if (resourceManager instanceof PostgresResourceManager
+        || resourceManager instanceof CloudPostgresResourceManager) {
       return SQLDialect.POSTGRESQL.name();
     }
     return SQLDialect.MYSQL.name();
@@ -380,7 +386,8 @@ public class SourceDbToSpannerITBase extends JDBCBaseIT {
 
   private String driverClassNameFrom(JDBCResourceManager jdbcResourceManager) {
     try {
-      if (jdbcResourceManager instanceof PostgresResourceManager) {
+      if (jdbcResourceManager instanceof PostgresResourceManager
+          || jdbcResourceManager instanceof CloudPostgresResourceManager) {
         return Class.forName("org.postgresql.Driver").getCanonicalName();
       }
       return Class.forName("com.mysql.jdbc.Driver").getCanonicalName();

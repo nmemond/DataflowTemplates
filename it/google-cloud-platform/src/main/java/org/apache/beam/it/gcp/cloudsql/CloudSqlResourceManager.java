@@ -44,6 +44,7 @@ public abstract class CloudSqlResourceManager
   protected final List<String> createdTables;
   protected boolean createdDatabase;
   protected boolean usingCustomDb;
+  protected boolean forDataflow;
 
   protected CloudSqlResourceManager(@NonNull Builder builder) {
     super(CloudSqlContainer.of(), builder);
@@ -52,7 +53,8 @@ public abstract class CloudSqlResourceManager
 
     this.createdDatabase = false;
     this.usingCustomDb = builder.usingCustomDb;
-    if (!usingCustomDb) {
+    this.forDataflow = builder.forDataflow;
+    if (!forDataflow && !usingCustomDb) {
       createDatabase(builder.dbName);
     }
     this.createdDatabase = true;
@@ -129,6 +131,11 @@ public abstract class CloudSqlResourceManager
 
   @Override
   public void cleanupAll() {
+    if (this.forDataflow) {
+      LOG.info("Ignoring cleanupAll for dataflow Cloud SQL resource manager.");
+      return;
+    }
+
     LOG.info("Attempting to cleanup CloudSQL manager.");
     try {
       if (this.usingCustomDb) {
@@ -153,12 +160,18 @@ public abstract class CloudSqlResourceManager
 
     private String dbName;
     private boolean usingCustomDb;
+    // The private hostname for accessing the Cloud SQL instance from within a GCP service
+    private String cloudSqlPrivateHost;
+    // The private port for accessing the Cloud SQL instance from within a GCP service
+    private int cloudSqlPrivatePort;
+    public boolean forDataflow;
 
     public Builder(String testId) {
       super(testId, "", "");
 
       this.setDatabaseName(generateDatabaseName(testId));
       this.usingCustomDb = false;
+      this.forDataflow = false;
 
       // Currently only supports static CloudSQL instance with static Cloud Auth Proxy
       this.maybeUseStaticInstance();
@@ -172,6 +185,12 @@ public abstract class CloudSqlResourceManager
       this.useStaticContainer();
 
       return this;
+    }
+
+    public void forDataflow() {
+      this.setHost(cloudSqlPrivateHost);
+      this.setPort(cloudSqlPrivatePort);
+      this.forDataflow = true;
     }
 
     protected String getDefaultUsername() {
@@ -188,6 +207,17 @@ public abstract class CloudSqlResourceManager
         this.setPort(Integer.parseInt(System.getProperty("cloudProxyPort")));
       } else {
         LOG.warn("Missing -DcloudProxyPort.");
+      }
+
+      if (System.getProperty("cloudPrivateHost") != null) {
+        this.cloudSqlPrivateHost = System.getProperty("cloudPrivateHost");
+      } else {
+        LOG.warn("Missing -DcloudPrivateHost.");
+      }
+      if (System.getProperty("cloudPrivatePort") != null) {
+        this.cloudSqlPrivatePort = Integer.parseInt(System.getProperty("cloudPrivatePort"));
+      } else {
+        LOG.warn("Missing -DcloudPrivatePort.");
       }
     }
 
