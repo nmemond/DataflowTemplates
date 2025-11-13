@@ -43,10 +43,14 @@ public class CloudPostgresResourceManager extends CloudSqlResourceManager {
   private String pgSchema;
   private boolean createdSchema;
 
+  private Builder builder;
+
   private CloudPostgresResourceManager(Builder builder) {
     super(builder);
     this.pgSchema = builder.schema;
     this.createdSchema = false;
+
+    this.builder = builder;
 
     // Set schema set by builder or default to use same name as database
     if (this.pgSchema == null) {
@@ -59,6 +63,11 @@ public class CloudPostgresResourceManager extends CloudSqlResourceManager {
 
   public static Builder builder(String testId) {
     return new Builder(testId);
+  }
+
+  public CloudPostgresResourceManager forDataflow() {
+    builder.forDataflow();
+    return new CloudPostgresResourceManager(builder);
   }
 
   public String getSchema() {
