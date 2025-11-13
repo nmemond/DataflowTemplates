@@ -33,12 +33,20 @@ public class CloudMySQLResourceManager extends CloudSqlResourceManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(CloudMySQLResourceManager.class);
 
+  private Builder builder;
+
   private CloudMySQLResourceManager(Builder builder) {
     super(builder);
+    this.builder = builder;
   }
 
   public static Builder builder(String testId) {
     return new Builder(testId);
+  }
+
+  public CloudMySQLResourceManager forDataflow() {
+    builder.forDataflow();
+    return new CloudMySQLResourceManager(builder);
   }
 
   @Override

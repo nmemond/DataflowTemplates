@@ -46,6 +46,7 @@ import org.apache.beam.it.gcp.artifacts.utils.ArtifactUtils;
 import org.apache.beam.it.gcp.pubsub.PubsubResourceManager;
 import org.apache.beam.it.gcp.spanner.SpannerResourceManager;
 import org.apache.beam.it.gcp.storage.GcsResourceManager;
+import org.apache.beam.it.jdbc.AbstractJDBCResourceManager;
 import org.apache.beam.it.jdbc.JDBCResourceManager;
 import org.apache.beam.it.jdbc.MySQLResourceManager;
 import org.slf4j.Logger;
@@ -136,7 +137,7 @@ public abstract class SpannerToSourceDbITBase extends TemplateTestBase {
   }
 
   protected void createAndUploadShardConfigToGcs(
-      GcsResourceManager gcsResourceManager, MySQLResourceManager jdbcResourceManager)
+      GcsResourceManager gcsResourceManager, AbstractJDBCResourceManager jdbcResourceManager)
       throws IOException {
     Shard shard = new Shard();
     shard.setLogicalShardId("Shard1");
@@ -283,8 +284,8 @@ public abstract class SpannerToSourceDbITBase extends TemplateTestBase {
     return jobInfo;
   }
 
-  protected void createMySQLSchema(MySQLResourceManager jdbcResourceManager, String mySqlSchemaFile)
-      throws IOException {
+  protected void createMySQLSchema(
+      AbstractJDBCResourceManager jdbcResourceManager, String mySqlSchemaFile) throws IOException {
     HashMap<String, String> columns = new HashMap<>();
     columns.put("id", "INT NOT NULL");
     columns.put("name", "VARCHAR(25)");
