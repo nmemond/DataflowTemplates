@@ -40,8 +40,6 @@ on:
       - 'v2/spanner-to-sourcedb/**'
       # Git action files
       - '.github/workflows/spanner-pr.yml'
-  schedule:
-  - cron: "3 */12 * * *"
   workflow_dispatch:
 
 concurrency:

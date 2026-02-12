@@ -46,8 +46,6 @@ on:
       # Exclude yaml and python paths from global run (covered in yaml-pr.yml)
       - '!yaml/**'
       - '!python/**'
-  schedule:
-    - cron: "0 */12 * * *"
   workflow_dispatch:
 
 concurrency:

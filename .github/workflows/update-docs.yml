@@ -1,8 +1,6 @@
 name: Update Template Documentation
 
 on:
-  schedule:
-    - cron: '0 16 * * 2' # Every Tuesday at 11 AM EST (16:00 UTC)
   workflow_dispatch:
 
 permissions:

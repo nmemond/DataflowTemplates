@@ -21,8 +21,6 @@ on:
         description: 'Beam snapshot version to use (e.g., 2.60.0-SNAPSHOT). If not provided, will calculate next version automatically.'
         required: false
         type: string
-  schedule:
-    - cron: "0 0 * * 2" # Runs every Tuesday at 12:00 AM UTC
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

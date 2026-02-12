@@ -1,8 +1,6 @@
 name: Update Python Dependencies
 
 on:
-  schedule:
-    - cron: '0 16 * * 1' # Every Monday at 11 AM EST (16:00 UTC)
   workflow_dispatch:
 
 permissions:
